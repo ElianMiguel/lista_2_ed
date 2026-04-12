@@ -14,8 +14,17 @@ NodeTransaction::NodeTransaction(Transaction transaction){
 
 // Funções da classe BuyList
 BuyList::BuyList(){
-    this->head = head;
+    this->head = nullptr;
     this->size = 0;
+}
+
+BuyList::~BuyList(){
+    NodeOrder* current = head;
+    while (current != nullptr) {
+        NodeOrder* prev = current;
+        current = current->next;
+        delete prev;
+    }
 }
 
 int BuyList::getSize() const{
@@ -28,13 +37,12 @@ void BuyList::insertEnd(Order order){
     if (head == nullptr) {
         head = newNode;
     } else {
-        NodeOrder* temp = temp;
+        NodeOrder* temp = head;
         while (temp->next != nullptr) {
             temp = temp->next;
         }
         temp->next = newNode;
     }
-
     size++;
 }
 
@@ -46,6 +54,7 @@ void BuyList::remove(Order order){
         head = head->next;
         delete temp;
         size--;
+        return;
     }
 
     NodeOrder* current = head;
@@ -94,8 +103,17 @@ void BuyList::printList(){
 
 // Funções da classe SellList
 SellList::SellList(){
-    this->head = head;
+    this->head = nullptr;
     this->size = 0;
+}
+
+SellList::~SellList(){
+    NodeOrder* current = head;
+    while (current != nullptr) {
+        NodeOrder* prev = current;
+        current = current->next;
+        delete prev;
+    }
 }
 
 int SellList::getSize() const{
@@ -108,13 +126,12 @@ void SellList::insertEnd(Order order){
     if (head == nullptr) {
         head = newNode;
     } else {
-        NodeOrder* temp = temp;
+        NodeOrder* temp = head;
         while (temp->next != nullptr) {
             temp = temp->next;
         }
         temp->next = newNode;
     }
-
     size++;
 }
 
@@ -126,6 +143,7 @@ void SellList::remove(Order order){
         head = head->next;
         delete temp;
         size--;
+        return;
     }
 
     NodeOrder* current = head;
@@ -171,8 +189,17 @@ void SellList::printList(){
 
 // Funções da classe TransactionList
 TransactionList::TransactionList(){
-    this->head = head;
-    this->size = size;
+    this->head = nullptr;
+    this->size = 0;
+}
+
+TransactionList::~TransactionList(){
+    NodeTransaction* current = head;
+    while (current != nullptr) {
+        NodeTransaction* prev = current;
+        current = current->next;
+        delete prev;
+    }
 }
 
 int TransactionList::getSize() const{
@@ -185,13 +212,12 @@ void TransactionList::insertEnd(Transaction transaction){
     if (head == nullptr) {
         head = newNode;
     } else {
-        NodeTransaction* temp = temp;
+        NodeTransaction* temp = head;
         while (temp->next != nullptr) {
             temp = temp->next;
         }
         temp->next = newNode;
     }
-
     size++;
 }
 
@@ -203,6 +229,7 @@ void TransactionList::remove(Transaction transaction){
         head = head->next;
         delete temp;
         size--;
+        return;
     }
 
     NodeTransaction* current = head;
@@ -252,6 +279,7 @@ OrderBook::OrderBook(){
     this->buyList = new BuyList();
     this->sellList = new SellList();
     this->transactionList = new TransactionList();
+    this->nextTransactionID = 1;
 }
 
 OrderBook::~OrderBook(){
@@ -272,29 +300,133 @@ OrderBook::~OrderBook(){
 
 }
 
-bool submit(Order order){
+bool OrderBook::submit(Order order){
     if (order.getType() == 'B') {
+        NodeOrder* current = sellList->head;
+        NodeOrder* best = nullptr;
 
+        while (current != nullptr) {
+            if (current->order.getPrice() <= order.getPrice()) {
+                if (best == nullptr || 
+                    current->order.getPrice() < best->order.getPrice() ||
+                    (current->order.getPrice() == best->order.getPrice() &&
+                     current->order.getTimestamp() < best->order.getTimestamp())) {
+                        best = current;
+                     }
+            }
+            current = current->next;
+        }
+
+        if (best == nullptr) {
+            buyList->insertEnd(order);
+
+            return false;
+        }
+
+        transactionList->insertEnd(Transaction(order.getID(), best->order.getID(), best->order.getPrice(), nextTransactionID++));
+        buyList->remove(best->order);
+
+        return true;
     }
     else if (order.getType() == 'S') {
+        NodeOrder* current = buyList->head;
+        NodeOrder* best = nullptr;
 
+        while (current != nullptr) {
+            if (current->order.getPrice() >= order.getPrice()) {
+                if (best == nullptr ||
+                    current->order.getPrice() > best->order.getPrice() ||
+                    (current->order.getPrice() == best->order.getPrice() &&
+                     current->order.getTimestamp() < best->order.getTimestamp())) {
+                        best = current;
+                     }
+            }
+            current = current->next;
+        }
+
+        if (best == nullptr) {
+            sellList->insertEnd(order);
+
+            return false;
+        }
+
+        transactionList->insertEnd(Transaction(best->order.getID(), order.getID(), best->order.getPrice(), nextTransactionID++));
+        buyList->remove(best->order);
+
+        return true;
     }
     return false;
 }
-bool cancel(int id){
+bool OrderBook::cancel(int id){
+    NodeOrder* current = buyList->head;
+
+    while (current != nullptr) {
+        if (current->order.getID() == id) {
+            buyList->remove(current->order);
+
+            return true;
+        }
+        current = current->next;
+    }
+
+    current = sellList->head;
+    
+    while (current != nullptr) {
+        if (current->order.getID() == id) {
+            sellList->remove(current->order);
+
+            return true;
+        }
+        current = current->next;
+    }
     return false;
 }
 
-Order* getBuyOrders(int* n){
-    return nullptr;
-}
-Order* getSellOrders(int* n){
-    return nullptr;
-}
-Transaction* getTransactions(int* n){
-    return nullptr;
+Order* OrderBook::getBuyOrders(int* n){
+    *n = buyList->getSize();
+    if (*n == 0) return nullptr;
+
+    Order* array = new Order[*n];
+
+    NodeOrder* current = buyList->head;
+    for (int i = 0; i < *n; i++) {
+        array[i] = current->order;
+        current = current->next;
+    }
+
+    return array;
 }
 
-void printBuyOrders(){}
-void printSellOrders(){}
-void printTransactions(){}
+Order* OrderBook::getSellOrders(int* n){
+    *n = sellList->getSize();
+    if (*n == 0) return nullptr;
+
+    Order* array = new Order[*n];
+
+    NodeOrder* current = sellList->head;
+    for (int i = 0; i < *n; i++) {
+        array[i] = current->order;
+        current = current->next;
+    }
+
+    return array;
+}
+
+Transaction* OrderBook::getTransactions(int* n){
+    *n = transactionList->getSize();
+    if (*n == 0) return nullptr;
+
+    Transaction* array = new Transaction[*n];
+
+    NodeTransaction* current = transactionList->head;
+    for (int i = 0; i < *n; i++) {
+        array[i] = current->transaction;
+        current = current->next;
+    }
+
+    return array;
+}
+
+void OrderBook::printBuyOrders(){}
+void OrderBook::printSellOrders(){}
+void OrderBook::printTransactions(){}

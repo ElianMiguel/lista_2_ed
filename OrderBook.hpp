@@ -28,14 +28,13 @@ public:
 
 class BuyList {
 
-private:
+public:
 
     NodeOrder* head;
     int size;
 
-public:
-
     BuyList();
+    ~BuyList();
     int getSize() const;
 
     void insertEnd(Order order);
@@ -47,14 +46,13 @@ public:
 
 class SellList {
 
-private:
+public:
 
     NodeOrder* head;
     int size;
 
-public:
-
     SellList();
+    ~SellList();
     int getSize() const;
 
     void insertEnd(Order order);
@@ -66,14 +64,13 @@ public:
 
 class TransactionList {
 
-private:
+public:
 
     NodeTransaction* head;
     int size;
 
-public:
-
     TransactionList();
+    ~TransactionList();
     int getSize() const;
 
     void insertEnd(Transaction transaction);
@@ -89,6 +86,7 @@ private:
     BuyList* buyList;
     SellList* sellList;
     TransactionList* transactionList;
+    int nextTransactionID;
 
 public:
 
