@@ -14,11 +14,13 @@ Funcionalidades:
 No Windows:
 
 `g++ main.cpp OrderBook.cpp Order.cpp Transaction.cpp -o order_book.exe`
+
 `.\order_book.exe`
 
 No Linux / macOS:
 
 `g++ main.cpp OrderBook.cpp Order.cpp Transaction.cpp -o order_book`
+
 `./order_book`
 
 ## Organização dos Dados
