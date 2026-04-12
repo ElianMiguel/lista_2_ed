@@ -17,6 +17,7 @@ No Windows:
 `.\order_book.exe`
 
 No Linux / macOS:
+
 `g++ main.cpp OrderBook.cpp Order.cpp Transaction.cpp -o order_book`
 `./order_book`
 
