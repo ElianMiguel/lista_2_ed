@@ -40,8 +40,8 @@ public:
 
     void insertEnd(Order order);
     void remove(Order order); // Mexer na assinatura da função.
-
     bool search(Order order) const;
+    void printList();
 
 };
 
@@ -58,10 +58,9 @@ public:
     int getSize() const;
 
     void insertEnd(Order order);
-
     void remove(Order order); // Mexer na assinatura da função.
-
     bool search(Order order) const;
+    void printList();
 
 };
 
@@ -79,13 +78,17 @@ public:
 
     void insertEnd(Transaction transaction);
     void remove(Transaction transaction);
-
     bool search(Transaction transaction) const;
+    void printList();
+
 };
 
 class OrderBook {
 
 private:
+    BuyList* buyList;
+    SellList* sellList;
+    TransactionList* transactionList;
 
 public:
 

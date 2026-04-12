@@ -18,3 +18,7 @@ int Transaction::getSellID() {
 float Transaction::getPrice() {
     return price;
 }
+
+int Transaction::getTransactionID(){
+    return transaction_ID;
+}

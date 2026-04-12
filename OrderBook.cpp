@@ -1,3 +1,4 @@
+#include <iostream>
 #include "OrderBook.hpp"
 
 NodeOrder::NodeOrder(Order order){
@@ -71,6 +72,25 @@ bool BuyList::search(Order order) const{
     return false;
 }
 
+void BuyList::printList(){
+    NodeOrder* current = head;
+
+    if (current == nullptr) {
+        std::cout << "(empty)" << std::endl;
+        return;
+    }
+
+    while (current != nullptr) {
+        std::cout << "[" << current->order.getID() << "|" 
+        << current->order.getPrice() << "|" << current->order.getTimestamp()
+        << "]" << std::endl;
+
+        current = current->next;
+    }
+}
+
+
+
 
 // Funções da classe SellList
 SellList::SellList(){
@@ -132,6 +152,22 @@ bool SellList::search(Order order) const{
     return false;
 }
 
+void SellList::printList(){
+    NodeOrder* current = head;
+
+    if (current == nullptr) {
+        std::cout << "(empty)" << std::endl;
+        return;
+    }
+
+    while (current != nullptr) {
+        std::cout << "[" << current->order.getID() << "|" 
+        << current->order.getPrice() << "|" << current->order.getTimestamp()
+        << "]" << std::endl;
+
+        current = current->next;
+    }
+}
 
 // Funções da classe TransactionList
 TransactionList::TransactionList(){
@@ -193,17 +229,71 @@ bool TransactionList::search(Transaction transaction) const{
     return false;
 }
 
+void TransactionList::printList(){
+    NodeTransaction* current = head;
+
+    if (current == nullptr) {
+        std::cout << "(empty)" << std::endl;
+        return;
+    }
+
+    while (current != nullptr) {
+        std::cout << "[" << current->transaction.getBuyID() << "|" 
+        << current->transaction.getSellID() << "|" << current->transaction.getPrice()
+        << current->transaction.getTransactionID() << "]" << std::endl;
+
+        current = current->next;
+    }
+}
+
 
 // Funções da classe OrderBook
-OrderBook::OrderBook(){}
-OrderBook::~OrderBook(){}
+OrderBook::OrderBook(){
+    this->buyList = new BuyList();
+    this->sellList = new SellList();
+    this->transactionList = new TransactionList();
+}
 
-bool submit(Order order){}
-bool cancel(int id){}
+OrderBook::~OrderBook(){
+    if (this->buyList != nullptr) {
+        delete this->buyList;
+        this->buyList = nullptr;
+    }
 
-Order* getBuyOrders(int* n){}
-Order* getSellOrders(int* n){}
-Transaction* getTransactions(int* n){}
+    if (this->sellList != nullptr) {
+        delete this->sellList;
+        this->sellList = nullptr;
+    }
+
+    if (this->transactionList != nullptr) {
+        delete this->transactionList;
+        this->transactionList = nullptr;
+    }
+
+}
+
+bool submit(Order order){
+    if (order.getType() == 'B') {
+
+    }
+    else if (order.getType() == 'S') {
+
+    }
+    return false;
+}
+bool cancel(int id){
+    return false;
+}
+
+Order* getBuyOrders(int* n){
+    return nullptr;
+}
+Order* getSellOrders(int* n){
+    return nullptr;
+}
+Transaction* getTransactions(int* n){
+    return nullptr;
+}
 
 void printBuyOrders(){}
 void printSellOrders(){}
