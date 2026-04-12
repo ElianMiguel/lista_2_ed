@@ -1,11 +1,18 @@
+
+#ifndef ORDER_HPP
+#define ORDER_HPP
+
 class Order {
+
 private:
+
     int ID;
     char type;
     float price;
     int timestamp;
 
 public:
+
     Order() {
         ID = 0;
         type = 'B';
@@ -20,3 +27,7 @@ public:
     float getPrice();
     int getTimestamp();
 };
+
+
+
+#endif

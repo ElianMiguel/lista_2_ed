@@ -2,7 +2,9 @@
 
 Order::Order(int ID, char type, float price, int timestamp) : ID(ID), type(type), price(price), timestamp(timestamp) {}
 
-Order::~Order() {}
+Order::~Order() {
+    // Não houve alocação dinâmica na memória.
+}
 
 int Order::getID() { 
     return ID; 
