@@ -84,18 +84,23 @@ bool BuyList::search(Order order) const{
 void BuyList::printList(){
     NodeOrder* current = head;
 
+    std::cout << "Buy Orders:" << std::endl;
+
     if (current == nullptr) {
         std::cout << "(empty)" << std::endl;
+        std::cout << std::endl;
         return;
     }
 
     while (current != nullptr) {
-        std::cout << "[" << current->order.getID() << "|" 
-        << current->order.getPrice() << "|" << current->order.getTimestamp()
-        << "]" << std::endl;
+        std::cout << "[ " << current->order.getID() << " | " 
+        << current->order.getPrice() << " | " << current->order.getTimestamp()
+        << " ]" << std::endl;
 
         current = current->next;
     }
+
+    std::cout << std::endl;
 }
 
 
@@ -173,18 +178,23 @@ bool SellList::search(Order order) const{
 void SellList::printList(){
     NodeOrder* current = head;
 
+    std::cout << "Sell Orders:" << std::endl;
+
     if (current == nullptr) {
         std::cout << "(empty)" << std::endl;
+        std::cout << std::endl;
         return;
     }
 
     while (current != nullptr) {
-        std::cout << "[" << current->order.getID() << "|" 
-        << current->order.getPrice() << "|" << current->order.getTimestamp()
-        << "]" << std::endl;
+        std::cout << "[ " << current->order.getID() << " | " 
+        << current->order.getPrice() << " | " << current->order.getTimestamp()
+        << " ]" << std::endl;
 
         current = current->next;
     }
+
+    std::cout << std::endl;
 }
 
 // Funções da classe TransactionList
@@ -258,19 +268,23 @@ bool TransactionList::search(Transaction transaction) const{
 
 void TransactionList::printList(){
     NodeTransaction* current = head;
+    std::cout << "Transactions: " << std:: endl;
 
     if (current == nullptr) {
         std::cout << "(empty)" << std::endl;
+        std::cout << std::endl;
         return;
     }
 
     while (current != nullptr) {
-        std::cout << "[" << current->transaction.getBuyID() << "|" 
-        << current->transaction.getSellID() << "|" << current->transaction.getPrice()
-        << current->transaction.getTransactionID() << "]" << std::endl;
+        std::cout << "[ " << current->transaction.getBuyID() << " | " 
+        << current->transaction.getSellID() << " | " << current->transaction.getPrice()
+        << " | " << current->transaction.getTransactionID() << " ]" << std::endl;
 
         current = current->next;
     }
+
+    std::cout << std::endl;
 }
 
 
@@ -325,6 +339,7 @@ bool OrderBook::submit(Order order){
 
         transactionList->insertEnd(Transaction(order.getID(), best->order.getID(), best->order.getPrice(), nextTransactionID++));
         buyList->remove(best->order);
+        sellList->remove(best->order);
 
         return true;
     }
@@ -352,6 +367,7 @@ bool OrderBook::submit(Order order){
 
         transactionList->insertEnd(Transaction(best->order.getID(), order.getID(), best->order.getPrice(), nextTransactionID++));
         buyList->remove(best->order);
+        sellList->remove(best->order);
 
         return true;
     }
@@ -427,6 +443,12 @@ Transaction* OrderBook::getTransactions(int* n){
     return array;
 }
 
-void OrderBook::printBuyOrders(){}
-void OrderBook::printSellOrders(){}
-void OrderBook::printTransactions(){}
+void OrderBook::printBuyOrders(){
+    this->buyList->printList();
+}
+void OrderBook::printSellOrders(){
+    this->sellList->printList();
+}
+void OrderBook::printTransactions(){
+    this->transactionList->printList();
+}
